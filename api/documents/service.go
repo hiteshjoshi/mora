@@ -2,7 +2,7 @@ package documents
 
 import (
 	"github.com/emicklei/go-restful"
-	"github.com/emicklei/mora/session"
+	"github.com/hiteshjoshi/mora/session"
 )
 
 const ParamID = "_id" // mongo id parameter
@@ -25,7 +25,7 @@ func (d Resource) Register(container *restful.Container, cors bool) {
 
 	// Cross Origin Resource Sharing filter
 	if cors {
-		corsRule := restful.CrossOriginResourceSharing{ExposeHeaders: []string{"Content-Type"}, CookiesAllowed: false, Container: container}
+		corsRule := restful.CrossOriginResourceSharing{ExposeHeaders: []string{"Content-Type"}, CookiesAllowed: true, Container: container}
 		ws.Filter(corsRule.Filter)
 	}
 
@@ -35,20 +35,20 @@ func (d Resource) Register(container *restful.Container, cors bool) {
 
 func (d Resource) WebService() *restful.WebService {
 	ws := new(restful.WebService)
-	ws.Path("/docs")
+	ws.Path("/api")
 	ws.Consumes("*/*")
 	ws.Produces(restful.MIME_JSON)
 
-	alias := ws.PathParameter("alias", "Name of the MongoDB instance as specified in the configuration")
-	database := ws.PathParameter("database", "Database name from the MongoDB instance")
+	//alias := ws.PathParameter("alias", "Name of the MongoDB instance as specified in the configuration")
+	//database := ws.PathParameter("database", "Database name from the MongoDB instance")
 	collection := ws.PathParameter("collection", "Collection name from the database")
 	id := ws.PathParameter(ParamID, "Storage identifier of the document")
 
 	paramID := "{" + ParamID + "}"
 
-	ws.Route(ws.GET("/").To(d.AliasListHandler).
-		Doc("Return all Mongo DB aliases from the configuration").
-		Operation("AliasListHandler"))
+	// ws.Route(ws.GET("/").To(d.AliasListHandler).
+	// 	Doc("Return all Mongo DB aliases from the configuration").
+	// 	Operation("AliasListHandler"))
 
 	//
 	// Returns all available aliases
@@ -57,10 +57,10 @@ func (d Resource) WebService() *restful.WebService {
 	//
 	// 	curl http://127.0.0.1:8181/docs/
 	//
-	ws.Route(ws.GET("/{alias}").To(d.AliasDatabasesHandler).
-		Doc("Return all database names").
-		Operation("AliasDatabasesHandler").
-		Param(alias))
+	// ws.Route(ws.GET("/{alias}").To(d.AliasDatabasesHandler).
+	// 	Doc("Return all database names").
+	// 	Operation("AliasDatabasesHandler").
+	// 	//Param(alias))
 
 	//
 	// Returns all available databases in alias
@@ -69,11 +69,11 @@ func (d Resource) WebService() *restful.WebService {
 	//
 	// 	curl http://127.0.0.1:8181/docs/local
 	//
-	ws.Route(ws.GET("/{alias}/{database}").To(d.DatabaseCollectionsHandler).
-		Doc("Return all collections for the database").
-		Operation("DatabaseCollectionsHandler").
-		Param(alias).
-		Param(database))
+	// ws.Route(ws.GET("/{alias}/{database}").To(d.DatabaseCollectionsHandler).
+	// 	Doc("Return all collections for the database").
+	// 	Operation("DatabaseCollectionsHandler").
+	// 	//Param(alias).
+	// 	//Param(database))
 
 	//
 	// Inserts a document into collection
@@ -87,11 +87,11 @@ func (d Resource) WebService() *restful.WebService {
 	//   -H 'Accept: application/json' \
 	//   --data '{"title": "test", "content": "high value content"}'
 	//
-	ws.Route(ws.POST("/{alias}/{database}/{collection}").To(d.CollectionUpdateHandler).
+	ws.Route(ws.POST("/{collection}").To(d.CollectionUpdateHandler).
 		Doc("Store a document to a collection from the database").
 		Operation("CollectionUpdateHandler").
-		Param(alias).
-		Param(database).
+		//Param(alias).
+		//Param(database).
 		Param(collection).
 		Reads(""))
 
@@ -107,11 +107,11 @@ func (d Resource) WebService() *restful.WebService {
 	//   -H 'Accept: application/json' \
 	//   --data '{"title": "test", "content": "high value content"}'
 	//
-	ws.Route(ws.POST("/{alias}/{database}/{collection}/" + paramID).To(d.CollectionUpdateHandler).
+	ws.Route(ws.POST("/{collection}/" + paramID).To(d.CollectionUpdateHandler).
 		Doc("Store a document to a collection from the database").
 		Operation("CollectionUpdateHandler").
-		Param(alias).
-		Param(database).
+		//Param(alias).
+		//Param(database).
 		Param(collection).
 		Param(id).
 		Reads(""))
@@ -125,11 +125,11 @@ func (d Resource) WebService() *restful.WebService {
 	//   -D - \
 	//   -H 'Accept: application/json'
 	//
-	ws.Route(ws.GET("/{alias}/{database}/{collection}/" + paramID).To(d.CollectionFindHandler).
+	ws.Route(ws.GET("/{collection}/" + paramID).To(d.CollectionFindHandler).
 		Doc("Return a document from a collection from the database by its internal " + ParamID).
 		Operation("GetDocument").
-		Param(alias).
-		Param(database).
+		//Param(alias).
+		//Param(database).
 		Param(collection).
 		Param(id).
 		Param(ws.QueryParameter("fields", "comma separated list of field names")))
@@ -143,11 +143,11 @@ func (d Resource) WebService() *restful.WebService {
 	//   -D - \
 	//   -H 'Accept: application/json'
 	//
-	ws.Route(ws.GET("/{alias}/{database}/{collection}").To(d.CollectionFindHandler).
+	ws.Route(ws.GET("/{collection}").To(d.CollectionFindHandler).
 		Doc("Return documents (max 10 by default) from a collection from the database.").
 		Operation("CollectionFindHandler").
-		Param(alias).
-		Param(database).
+		//Param(alias).
+		//Param(database).
 		Param(collection).
 		Param(ws.QueryParameter("count", "counts documents in collection and returns result in X-Object-Count header").DataType("boolean")).
 		Param(ws.QueryParameter("query", "query in json format")).
@@ -168,11 +168,11 @@ func (d Resource) WebService() *restful.WebService {
 	//   -H 'Accept: application/json' \
 	//   --data '{"title": "New title"}'
 	//
-	ws.Route(ws.PUT("/{alias}/{database}/{collection}/" + paramID).To(d.CollectionUpdateHandler).
+	ws.Route(ws.PUT("/{collection}/" + paramID).To(d.CollectionUpdateHandler).
 		Doc("Updates documents in collection selected by " + ParamID + " parameter").
 		Operation("CollectionUpdateHandler").
-		Param(alias).
-		Param(database).
+		//Param(alias).
+		//Param(database).
 		Param(collection).
 		Param(id).
 		Reads(""))
@@ -189,11 +189,11 @@ func (d Resource) WebService() *restful.WebService {
 	//   -H 'Accept: application/json' \
 	//   --data '{"title": "New title"}'
 	//
-	ws.Route(ws.PUT("/{alias}/{database}/{collection}").To(d.CollectionUpdateHandler).
+	ws.Route(ws.PUT("/{collection}").To(d.CollectionUpdateHandler).
 		Doc("Updates documents in collection selected by query parameter").
 		Operation("CollectionUpdateHandler").
-		Param(alias).
-		Param(database).
+		//Param(alias).
+		//Param(database).
 		Param(collection).
 		Param(ws.QueryParameter("query", "query in json format")).
 		Reads(""))
@@ -205,11 +205,11 @@ func (d Resource) WebService() *restful.WebService {
 	//
 	// 	curl -X DELETE 'http://127.0.0.1:8181/docs/local/database/new-collection/document-id'
 	//
-	ws.Route(ws.DELETE("/{alias}/{database}/{collection}/" + paramID).To(d.CollectionRemoveHandler).
+	ws.Route(ws.DELETE("/{collection}/" + paramID).To(d.CollectionRemoveHandler).
 		Doc("Deletes a document from a collection from the database by its internal " + ParamID).
 		Operation("CollectionRemoveHandler").
-		Param(alias).
-		Param(database).
+		//Param(alias).
+		//Param(database).
 		Param(collection).
 		Param(id))
 
@@ -220,11 +220,11 @@ func (d Resource) WebService() *restful.WebService {
 	//
 	// 	curl -X DELETE 'http://127.0.0.1:8181/docs/local/database/new-collection?query={"new": false}'
 	//
-	ws.Route(ws.DELETE("/{alias}/{database}/{collection}").To(d.CollectionRemoveHandler).
+	ws.Route(ws.DELETE("/{collection}").To(d.CollectionRemoveHandler).
 		Doc("Deletes documents from collection if query present, otherwise removes the entire collection.").
 		Operation("CollectionRemoveHandler").
-		Param(alias).
-		Param(database).
+		//Param(alias).
+		//Param(database).
 		Param(collection).
 		Param(ws.QueryParameter("query", "query in json format")))
 

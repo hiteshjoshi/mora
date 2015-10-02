@@ -8,9 +8,9 @@ import (
 
 	"github.com/emicklei/go-restful"
 	"github.com/emicklei/go-restful/swagger"
-	"github.com/emicklei/mora/api/documents"
-	"github.com/emicklei/mora/api/statistics"
-	"github.com/emicklei/mora/session"
+	"github.com/hiteshjoshi/mora/api/documents"
+	//"github.com/hiteshjoshi/mora/api/statistics"
+	"github.com/hiteshjoshi/mora/session"
 	"github.com/magiconair/properties"
 )
 
@@ -57,9 +57,9 @@ func main() {
 	documents.Register(sessMng, restful.DefaultContainer, apiCors)
 
 	// Statistics API
-	if ok := props.GetBool("mora.statistics.enable", false); ok {
-		statistics.Register(sessMng, restful.DefaultContainer)
-	}
+	// if ok := props.GetBool("mora.statistics.enable", false); ok {
+	// 	statistics.Register(sessMng, restful.DefaultContainer)
+	// }
 
 	addr := props.MustGet("http.server.host") + ":" + props.MustGet("http.server.port")
 	basePath := "http://" + addr

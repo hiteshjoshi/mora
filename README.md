@@ -269,7 +269,7 @@ When querying on collections those parameters are available:
 
 ### Install from source
 						
-	go get -u github.com/emicklei/mora
+	go get -u github.com/hiteshjoshi/mora
 	
 ### Create a release
 	
