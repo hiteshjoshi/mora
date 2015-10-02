@@ -69,7 +69,7 @@ func (d *Resource) AliasDatabasesHandler(req *restful.Request, resp *restful.Res
 //
 func (d *Resource) DatabaseCollectionsHandler(req *restful.Request, resp *restful.Response) {
 	// Mongo session
-	session, needclose, err := d.SessMng.Get('local')//getParam("alias", req)
+	session, needclose, err := d.SessMng.Get("local")//getParam("alias", req)
 	if err != nil {
 		WriteError(err, resp)
 		return
@@ -79,7 +79,7 @@ func (d *Resource) DatabaseCollectionsHandler(req *restful.Request, resp *restfu
 	}
 
 	// Database request parameter
-	dbname := 'loudshout'//getParam("database", req)
+	dbname := "loudshout"//getParam("database", req)
 
 	// Get collections from database
 	collections, err := session.DB(dbname).CollectionNames()
@@ -112,6 +112,7 @@ func (d *Resource) CollectionUpdateHandler(req *restful.Request, resp *restful.R
 	// UseNumber() which turns all numbers into strings. See:
 	// https://github.com/hiteshjoshi/mora/pull/31
 	decoder := json.NewDecoder(req.Request.Body)
+	log.Printf("Here %v",decoder)
 	err := decoder.Decode(&document)
 	if err != nil {
 		WriteStatusError(http.StatusBadRequest, err, resp)
@@ -125,7 +126,7 @@ func (d *Resource) CollectionUpdateHandler(req *restful.Request, resp *restful.R
 	}
 
 	// Mongo session
-	session, needclose, err := d.SessMng.Get('local')//getParam("alias", req)
+	session, needclose, err := d.SessMng.Get("local")//getParam("alias", req)
 	if err != nil {
 		WriteError(err, resp)
 		return
@@ -262,7 +263,7 @@ func (d *Resource) handleInsert(col *mgo.Collection, selector, document bson.M, 
 //
 func (d *Resource) CollectionFindHandler(req *restful.Request, resp *restful.Response) {
 	// Mongo session
-	session, needclose, err := d.SessMng.Get('local')//getParam("alias", req)
+	session, needclose, err := d.SessMng.Get("local")//getParam("alias", req)
 	if err != nil {
 		WriteError(err, resp)
 		return
@@ -365,7 +366,7 @@ func (d *Resource) CollectionFindHandler(req *restful.Request, resp *restful.Res
 //
 func (d *Resource) CollectionRemoveHandler(req *restful.Request, resp *restful.Response) {
 	// Mongo session
-	session, needclose, err := d.SessMng.Get('local')//getParam("alias", req)
+	session, needclose, err := d.SessMng.Get("local")//getParam("alias", req)
 	if err != nil {
 		WriteError(err, resp)
 		return
@@ -518,7 +519,7 @@ func (d *Resource) collectionurl(next bool, req *restful.Request) string {
 }
 
 func (d *Resource) GetMongoCollection(req *restful.Request, session *mgo.Session) *mgo.Collection {
-	return session.DB('loudshout').C(req.PathParameter("collection"))
+	return session.DB("loudshout").C(req.PathParameter("collection"))
 }
 
 func getFields(req *restful.Request) bson.M {
